@@ -1,0 +1,48 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "discord.fullname" . }}
+  labels:
+    {{- include "discord.labels" . | nindent 4 }}
+  annotations:
+    # Traefik upgrades WebSocket connections automatically for matched routers.
+    # No body-buffering middleware is attached so the /ws Upgrade is preserved.
+    traefik.ingress.kubernetes.io/router.entrypoints: {{ if .Values.ingress.tls.enabled }}websecure{{ else }}web{{ end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ .Values.ingress.tls.secretName | quote }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          # More specific prefixes (/api, /ws) are matched before / by Traefik's
+          # rule-length ordering, so the API and signaling socket reach the
+          # backend while everything else serves the SPA.
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "discord.backend.fullname" . }}
+                port:
+                  number: {{ .Values.backend.service.port }}
+          - path: /ws
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "discord.backend.fullname" . }}
+                port:
+                  number: {{ .Values.backend.service.port }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "discord.frontend.fullname" . }}
+                port:
+                  number: {{ .Values.frontend.service.port }}
+{{- end }}

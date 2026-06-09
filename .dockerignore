@@ -1,0 +1,7 @@
+# Root .dockerignore — build contexts are ./backend and ./frontend, which have
+# their own .dockerignore files. This guards accidental root-context builds.
+.git
+**/node_modules
+**/dist
+**/bin
+tasks/

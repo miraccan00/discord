@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "discord.backend.fullname" . }}
+  labels:
+    {{- include "discord.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+data:
+  PORT: {{ .Values.backend.service.port | quote }}
+  # Derived from ingress.host + ingress.tls.enabled unless explicitly overridden.
+  ALLOWED_ORIGINS: {{ include "discord.allowedOrigins" . | quote }}
+  JWT_TTL_MINUTES: {{ .Values.backend.env.jwtTtlMinutes | quote }}

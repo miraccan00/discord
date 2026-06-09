@@ -1,0 +1,6 @@
+apiVersion: v2
+name: discord
+description: A voice-first chat app — Go WebRTC signaling backend + React frontend, deployed as one product.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

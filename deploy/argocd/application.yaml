@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: discord
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/miraccan00/discord
+    targetRevision: HEAD   # pin to a tag (e.g. v0.1.0) for production
+    path: deploy/helm/discord
+    helm:
+      releaseName: discord
+      parameters:
+        - name: ingress.host
+          value: discord.local            # change to your real hostname
+        - name: backend.existingSecret
+          value: discord-backend          # created by scripts/create-secrets.sh
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: discord
+
+  syncPolicy:
+    automated:
+      prune: true      # removes resources deleted from git
+      selfHeal: true   # re-applies any manual kubectl changes
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

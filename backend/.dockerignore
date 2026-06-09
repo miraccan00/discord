@@ -1,0 +1,6 @@
+bin/
+*_test.go
+.golangci.yml
+Makefile
+README.md
+.git

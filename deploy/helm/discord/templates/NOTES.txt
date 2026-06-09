@@ -1,0 +1,25 @@
+{{ .Chart.Name }} {{ .Chart.AppVersion }} deployed as release "{{ .Release.Name }}".
+
+Components:
+  • backend  ({{ include "discord.backend.image" . }})  — WebRTC signaling, {{ .Values.backend.replicaCount }} replica
+  • frontend ({{ include "discord.frontend.image" . }})
+
+{{- if .Values.ingress.enabled }}
+
+Access the app at:
+  http{{ if .Values.ingress.tls.enabled }}s{{ end }}://{{ .Values.ingress.host }}/
+
+If {{ .Values.ingress.host }} is not in DNS, map it to your ingress IP, e.g.:
+  echo "<INGRESS_IP> {{ .Values.ingress.host }}" | sudo tee -a /etc/hosts
+{{- else }}
+
+Ingress is disabled. Port-forward to reach the services:
+  kubectl port-forward svc/{{ include "discord.frontend.fullname" . }} 8080:{{ .Values.frontend.service.port }}
+{{- end }}
+
+IMPORTANT: Microphone access (getUserMedia) requires a SECURE CONTEXT. It works
+on http://localhost, but any other host MUST be served over HTTPS — set
+ingress.tls.enabled=true with a valid certificate.
+
+NOTE: The backend keeps room state in memory, so backend.replicaCount must stay
+at 1 (horizontal scaling would need a shared pub/sub such as Redis).

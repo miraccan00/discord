@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(helm version *)",
+      "Bash(git --version)",
+      "Bash(golangci-lint version *)",
+      "Bash(npx tsc *)",
+      "Bash(helm template *)",
+      "Bash(echo \"---kubeval-ish: render ok? exit=$?\")",
+      "Bash(go mod *)",
+      "Bash(node -e \"console.log\\('WebSocket' in globalThis ? 'HAS_WS' : 'NO_WS'\\)\")",
+      "Bash(helm lint *)"
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+# Default values for the discord chart. One chart deploys both components.
+
+nameOverride: ""
+fullnameOverride: ""
+
+backend:
+  image:
+    registry: docker.io
+    repository: miraccan/discord-backend
+    # tag defaults to .Chart.AppVersion when empty.
+    tag: ""
+    pullPolicy: IfNotPresent
+  replicaCount: 1 # MUST stay 1: room state is held in-memory in a single pod.
+  service:
+    port: 8080
+  # Pre-created secret name (recommended). When set, Helm does NOT create a Secret
+  # and jwtSecret below is ignored. Run scripts/create-secrets.sh before helm install.
+  existingSecret: ""
+  # Fallback: Helm creates the secret from this value. ONLY for local/dev use —
+  # the value ends up in Helm release history.
+  jwtSecret: "change-me-in-prod"
+  env:
+    # Leave empty to derive from ingress.host + ingress.tls.enabled automatically.
+    # Set explicitly only when the origin differs from the ingress host (e.g. CDN).
+    allowedOrigins: ""
+    jwtTtlMinutes: "60"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+frontend:
+  image:
+    registry: docker.io
+    repository: miraccan/discord-frontend
+    tag: ""
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    port: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+ingress:
+  enabled: true
+  className: traefik
+  host: discord.local
+  tls:
+    enabled: false
+    secretName: ""
