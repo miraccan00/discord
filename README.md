@@ -79,7 +79,7 @@ git init
 git add .
 git commit -m "initial: discord voice app"
 git remote add origin https://github.com/miraccan00/discord.git
-git push -u origin main
+git push -u origin master
 ```
 
 ### Step 2 — GitHub Actions secrets
@@ -91,7 +91,7 @@ Go to **Settings → Secrets and variables → Actions** in the GitHub repo and 
 | `DOCKERHUB_USERNAME` | `miraccan` |
 | `DOCKERHUB_PASSWORD` | Docker Hub hesap şifresi |
 
-CI runs automatically on every push to `main`. To publish images:
+CI runs automatically on every push to `master`. To publish images:
 
 ```bash
 git tag v0.1.0 && git push origin v0.1.0
@@ -180,7 +180,7 @@ in git.
 
 ## CI/CD
 
-- **CI** (`push`/`PR` to `main`): backend `golangci-lint` → `go test -race` →
+- **CI** (`push`/`PR` to `master`): backend `golangci-lint` → `go test -race` →
   build; frontend typecheck/lint/build; Docker build smoke test for both images.
 - **CD** (tag `v*`): build & push both images to Docker Hub (semver + `sha-` tags),
   then `helm lint --strict`.

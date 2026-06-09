@@ -324,13 +324,13 @@ issues:
       linters:
         - errcheck
 
-    # Main packages often have os.Exit without proper error handling
+    # master packages often have os.Exit without proper error handling
     - path: "cmd/.*\\.go"
       linters:
         - errcheck
       text: "os.Exit"
 
-    # CLI flags and environment variables in main
+    # CLI flags and environment variables in master
     - path: "cmd/.*\\.go"
       linters:
         - gosec
