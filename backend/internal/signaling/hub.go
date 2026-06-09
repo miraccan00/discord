@@ -1,3 +1,5 @@
+// Package signaling implements the in-memory room hub that relays WebRTC
+// signaling messages (offer/answer/ICE) between connected WebSocket clients.
 package signaling
 
 import (

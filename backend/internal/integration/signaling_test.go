@@ -62,12 +62,18 @@ func TestSignalingFlow(t *testing.T) {
 	srv := httptest.NewServer(router.New(cfg, hub, issuer))
 	defer srv.Close()
 
-	aliceTok, _ := issuer.Issue("alice")
-	bobTok, _ := issuer.Issue("bob")
+	aliceTok, err := issuer.Issue("alice")
+	if err != nil {
+		t.Fatalf("issue alice token: %v", err)
+	}
+	bobTok, err := issuer.Issue("bob")
+	if err != nil {
+		t.Fatalf("issue bob token: %v", err)
+	}
 
 	// Act + Assert: alice joins an empty room.
 	alice := dial(t, srv.URL, aliceTok)
-	defer alice.Close(websocket.StatusNormalClosure, "")
+	defer func() { _ = alice.Close(websocket.StatusNormalClosure, "") }()
 	write(t, alice, signaling.Message{Type: signaling.TypeJoin})
 	if m := read(t, alice); m.Type != signaling.TypeRoomState {
 		t.Fatalf("alice first message = %q, want room-state", m.Type)
@@ -75,7 +81,7 @@ func TestSignalingFlow(t *testing.T) {
 
 	// bob joins; alice should be told a peer joined.
 	bob := dial(t, srv.URL, bobTok)
-	defer bob.Close(websocket.StatusNormalClosure, "")
+	defer func() { _ = bob.Close(websocket.StatusNormalClosure, "") }()
 	write(t, bob, signaling.Message{Type: signaling.TypeJoin})
 
 	bobState := read(t, bob)

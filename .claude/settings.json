@@ -14,7 +14,11 @@
       "WebFetch(domain:golangci-lint.run)",
       "Bash(gh api *)",
       "Bash(golangci-lint --version)",
-      "Bash(golangci-lint run *)"
+      "Bash(golangci-lint run *)",
+      "Bash(go install *)",
+      "Bash(python -c \"import sys,json; [print\\(i['from_linter'],'|',i['pos']['filename']+':'+str\\(i['pos']['line']\\),'|',i['text']\\) for i in json.load\\(sys.stdin\\)['Issues']]\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(i\\) for i in d.keys\\(\\)]\")",
+      "Bash(python -c \"import sys,json; issues=json.load\\(sys.stdin\\)['Issues']; [print\\(i.get\\('FromLinter','?'\\),'|',i.get\\('Pos',{}\\).get\\('Filename','?'\\)+':'+str\\(i.get\\('Pos',{}\\).get\\('Line','?'\\)\\),'|',i.get\\('Text','?'\\)\\) for i in issues]\")"
     ]
   }
 }

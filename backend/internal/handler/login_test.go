@@ -47,7 +47,7 @@ func TestLoginInvalidCredentials(t *testing.T) {
 func TestLoginRejectsGet(t *testing.T) {
 	// Arrange
 	h := NewLogin(auth.NewIssuer("secret", 60))
-	req := httptest.NewRequest(http.MethodGet, "/api/login", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/login", http.NoBody)
 	rec := httptest.NewRecorder()
 
 	// Act

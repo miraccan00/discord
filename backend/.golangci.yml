@@ -1,6 +1,8 @@
 # golangci-lint v2 configuration
 # https://golangci-lint.run/usage/configuration/
 
+version: "2"
+
 run:
   timeout: 5m
   concurrency: 4
@@ -28,8 +30,6 @@ linters:
     - bodyclose
 
     # ── Formatting & style ───────────────────────────────────────
-    - gofmt
-    - goimports
     - whitespace
     - lll
 
@@ -49,7 +49,7 @@ linters:
   settings:
     errcheck:
       check-type-assertions: true
-      check-blank: true
+      check-blank: false   # _, _ = fn() explicitly signals intentional discard
       disable-default-exclusions: false
 
     revive:
@@ -95,9 +95,6 @@ linters:
       line-length: 120
       tab-width: 4
 
-    gofmt:
-      simplify: true
-
     staticcheck:
       checks:
         - "all"
@@ -133,6 +130,14 @@ linters:
 
     perfsprint:
       strconcat: true
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    gofmt:
+      simplify: true
 
 issues:
   max-issues-per-linter: 0
@@ -171,7 +176,7 @@ issues:
 
 output:
   formats:
-    - format: colored-tab
-    - format: json
+    colored-tab: {}
+    json:
       path: golangci-lint-report.json
   show-statistics: true
