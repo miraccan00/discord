@@ -1,359 +1,177 @@
-# golangci-lint configuration
-# Production-ready for large-scale Go projects
-# Based on best practices from Google, Uber, Cloudflare, and Kubernetes
-# See: https://golangci-lint.run/
+# golangci-lint v2 configuration
+# https://golangci-lint.run/usage/configuration/
 
 run:
   timeout: 5m
-  tests: true
   concurrency: 4
-  allow-parallel-runners: true
 
 linters:
   disable-all: true
   enable:
-    # ============================================================
-    # CRITICAL: Bug Detection & Type Safety
-    # ============================================================
-
-    # govet: Go's built-in static analyzer
-    # Detects: struct tags, Printf format mismatches, copying mutexes, unsafe pointers
-    # Used by: Kubernetes, Docker, etcd
+    # ── Bug detection & type safety ───────────────────────────────
     - govet
-
-    # staticcheck: Comprehensive static analysis (1000+ checks)
-    # Detects: Deprecated APIs, impossible conditions, dead code, ineffective assignments
-    # Used by: Kubernetes, Cockroach, Etcd
     - staticcheck
-
-    # errcheck: Detects unchecked error returns
-    # Critical for reliability: catches forgotten defer, Close(), etc.
-    # Used by: Every production Go project
     - errcheck
-
-    # unused: Detects unused variables, functions, constants, types
-    # Catches dead code before shipping
     - unused
-
-    # ineffassign: Detects assignments that are always overwritten
-    # Prevents logic bugs from copy-paste errors
     - ineffassign
-
-    # copyloopvar: Detects loop variable capture in goroutines (Go 1.22+)
-    # Prevents common concurrency bugs
-    # Replaces deprecated exportloopref
     - copyloopvar
 
-    # ============================================================
-    # CODE QUALITY & IDIOMS
-    # ============================================================
-
-    # revive: Configurable linter (replaces deprecated golint)
-    # Enforces Go naming conventions and idioms
-    # Used by: Google, many open-source projects
+    # ── Code quality & idioms ─────────────────────────────────────
     - revive
-
-    # gocritic: Opinionated Go code reviewer
-    # Detects: suboptimal code patterns, performance issues, non-idiomatic usage
-    # Used by: Kubernetes contributors
     - gocritic
 
-    # ============================================================
-    # SECURITY SCANNING
-    # ============================================================
-
-    # gosec: Security analysis for Go code
-    # Detects: hardcoded secrets, insecure cryptography, SQL injection risks, etc.
-    # Used by: Kubernetes, many security-conscious projects
+    # ── Security ─────────────────────────────────────────────────
     - gosec
-
-    # bidichk: Detects suspicious unicode bidirectional characters
-    # Prevents supply-chain attacks via trojan unicode
-    # Used by: Security-hardened projects
     - bidichk
 
-    # ============================================================
-    # RESOURCE SAFETY
-    # ============================================================
-
-    # bodyclose: Detects unclosed HTTP response bodies
-    # Prevents connection leaks that degrade performance
+    # ── Resource safety ──────────────────────────────────────────
     - bodyclose
 
-    # ============================================================
-    # FORMATTING & STYLE
-    # ============================================================
-
-    # gofmt: Go code formatter compliance
-    # Ensures consistent formatting across team
-    # Used by: Every Go project
+    # ── Formatting & style ───────────────────────────────────────
     - gofmt
-
-    # goimports: Manages import statements
-    # Auto-sorts and removes unused imports
-    # Used by: Uber, Google, most production projects
     - goimports
-
-    # whitespace: Detects unnecessary whitespace
     - whitespace
-
-    # lll: Reports lines exceeding max length
-    # Enforces readability by keeping lines short
     - lll
 
-    # ============================================================
-    # PERFORMANCE
-    # ============================================================
-
-    # prealloc: Suggests pre-allocating slices
-    # Single allocation instead of multiple append() calls
-    # Used by: Performance-critical codebases
+    # ── Performance ───────────────────────────────────────────────
     - prealloc
-
-    # perfsprint: Optimizes string formatting
-    # Suggests faster alternatives to fmt.Sprintf
     - perfsprint
-
-    # durationcheck: Ensures proper duration math
-    # Prevents time.Duration bugs (e.g., 5 instead of 5*time.Second)
     - durationcheck
 
-    # ============================================================
-    # VALIDATION & CONVENTIONS
-    # ============================================================
-
-    # errchkjson: Detects errors in JSON marshaling/unmarshaling
-    # Catches forgotten error checks in JSON handling
+    # ── Validation & conventions ──────────────────────────────────
     - errchkjson
-
-    # unconvert: Detects unnecessary type conversions
     - unconvert
-
-    # usestdlibvars: Suggests using stdlib variables instead of strings
-    # Example: use http.MethodGet instead of "GET"
     - usestdlibvars
-
-    # nilerr: Detects returning nil when other errors occurred
     - nilerr
-
-    # nolintlint: Validates //nolint directives
-    # Ensures //nolint comments are necessary and correct
     - nolintlint
-
-    # misspell: Detects common misspellings in code
     - misspell
 
-    # ============================================================
-    # ADVANCED CHECKS (Optional, enable selectively)
-    # ============================================================
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+      disable-default-exclusions: false
 
-    # sqlc: Validates SQL queries (requires sqlc plugin)
-    # - sqlc
+    revive:
+      ignore-generated-header: true
+      severity: warning
+      enable-all-rules: false
+      rules:
+        - name: error-return
+        - name: error-naming
+        - name: receiver-naming
+        - name: var-naming
+          arguments:
+            - - "ID"
+              - "HTTP"
+              - "HTTPServer"
+              - "API"
+              - "URL"
+              - "UUID"
+              - "CIDR"
+              - "TCP"
+              - "UDP"
+              - "DNS"
+              - "gRPC"
+              - "TLS"
+              - "SHA"
+              - "MD5"
+        - name: indent-error-flow
+        - name: defer
+        - name: early-return
+        - name: range
+        - name: exported
 
-    # tenv: Detects setting os.Environ variables in tests
-    # - tenv
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - performance
+        - style
+      disabled-checks:
+        - hugeParam
+        - singleCaseSwitch
 
-linters-settings:
-  # ============================================================
-  # ERRCHECK Configuration
-  # ============================================================
-  errcheck:
-    check-type-assertions: true  # Check type assertion errors
-    check-blank: true             # Check blank assignments (e.g., _, _ := x())
-    disable-default-exclusions: false
-    # Functions to ignore (if needed)
-    # ignore: fmt:.*
+    lll:
+      line-length: 120
+      tab-width: 4
 
-  # ============================================================
-  # REVIVE Configuration
-  # ============================================================
-  revive:
-    ignore-generated-header: true
-    severity: warning
-    enable-all-rules: false
-    rules:
-      # Error handling rules
-      - name: error-return
-        arguments: []
-      - name: error-naming
-        arguments: []
+    gofmt:
+      simplify: true
 
-      # Naming rules
-      - name: receiver-naming
-        arguments: []
-      - name: var-naming
-        arguments:
-          - - "ID"           # acronyms
-            - "HTTP"
-            - "HTTPServer"
-            - "API"
-            - "URL"
-            - "UUID"
-            - "CIDR"
-            - "TCP"
-            - "UDP"
-            - "DNS"
-            - "gRPC"
-            - "TLS"
-            - "SHA"
-            - "MD5"
+    staticcheck:
+      checks:
+        - "all"
+        - "-SA9003"
+        - "-SA1019"
 
-      # Code quality rules
-      - name: indent-error-flow
-        arguments: []
-      - name: defer
-        arguments: []
-      - name: early-return
-        arguments: []
-      - name: range
-        arguments: []
+    gosec:
+      confidence: medium
+      severity: medium
+      includes:
+        - G101
+        - G102
+        - G103
+        - G104
+        - G107
+        - G201
+        - G301
+        - G302
+        - G304
+        - G305
+        - G401
+        - G402
+        - G403
+        - G501
+        - G502
+        - G503
+        - G601
 
-      # Documentation
-      - name: exported
+    nolintlint:
+      allow-unused: false
+      require-explanation: true
+      require-specific: true
 
-  # ============================================================
-  # GOCRITIC Configuration
-  # ============================================================
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - performance
-      - style
-    disabled-checks:
-      - hugeParam        # can be too strict for some codebases
-      - singleCaseSwitch # low-value rule
+    perfsprint:
+      strconcat: true
 
-  # ============================================================
-  # LLL Configuration (Line Length)
-  # ============================================================
-  lll:
-    line-length: 120  # max characters per line (80 is too strict for Go, 120 is industry standard)
-    tab-width: 4      # tab counts as 4 characters
-
-  # ============================================================
-  # GOFMT Configuration
-  # ============================================================
-  gofmt:
-    simplify: true
-
-  # ============================================================
-  # STATICCHECK Configuration
-  # ============================================================
-  staticcheck:
-    checks:
-      - "all"
-      - "-SA9003"  # empty branch: often intentional
-      - "-SA1019"  # deprecated packages: sometimes necessary for compatibility
-
-  # ============================================================
-  # GOSEC Configuration (Security)
-  # ============================================================
-  gosec:
-    confidence: medium  # report medium+ severity issues
-    severity: medium
-    includes:
-      - G101  # Hardcoded SQL string
-      - G102  # Bind to all network interfaces
-      - G103  # Use of unsafe
-      - G104  # Errors not checked
-      - G107  # Potential HTTP request made with variable URL
-      - G201  # SQL string concatenation
-      - G301  # Poor file permissions
-      - G302  # Poor file permissions (mkdir)
-      - G304  # File included via variable
-      - G305  # File traversal
-      - G401  # Weak cryptography (MD5/SHA1)
-      - G402  # Weak TLS configuration
-      - G403  # Weak random number generator
-      - G501  # Import blacklist
-      - G502  # Weak crypto import
-      - G503  # Weak crypto usage
-      - G601  # Implicit memory aliasing in loops
-
-  # ============================================================
-  # NOLINTLINT Configuration
-  # ============================================================
-  nolintlint:
-    allow-unused: false          # Don't allow unused //nolint
-    require-explanation: true    # Require reason for every //nolint
-    require-specific: true       # Require specific linter name (not just //nolint)
-
-  # ============================================================
-  # PERFSPRINT Configuration
-  # ============================================================
-  perfsprint:
-    strconcat: true  # suggest strings.Builder for concatenation
-
-# ============================================================
-# ISSUES: Global issue configuration
-# ============================================================
 issues:
-  exclude-dirs-use-default: false  # don't auto-skip examples/, testdata/, etc.
-  max-issues-per-linter: 0     # No limit on issues per linter
-  max-same-issues: 0            # No limit on same issues
-  max-issues: 0                 # No global limit
+  max-issues-per-linter: 0
+  max-same-issues: 0
 
-  # Exclude generated code and test files from strict rules
   exclude-rules:
-    # Generated code should not be linted for style
     - path: ".*\\.pb\\.go"
-      linters:
-        - revive
-        - gocritic
-        - gosec
+      linters: [revive, gocritic, gosec]
 
     - path: ".*_gen\\.go"
-      linters:
-        - revive
-        - gocritic
+      linters: [revive, gocritic]
 
     - path: ".*_mock\\.go"
-      linters:
-        - revive
-        - gocritic
+      linters: [revive, gocritic]
 
-    # Test files have different priorities than production
     - path: "_test\\.go"
-      linters:
-        - errcheck
-        - gosec
-        - gocritic
+      linters: [errcheck, gosec, gocritic]
 
-    # Benchmark code
     - path: "_bench\\.go"
-      linters:
-        - errcheck
+      linters: [errcheck]
 
-    # master packages often have os.Exit without proper error handling
     - path: "cmd/.*\\.go"
-      linters:
-        - errcheck
+      linters: [errcheck]
       text: "os.Exit"
 
-    # CLI flags and environment variables in master
     - path: "cmd/.*\\.go"
-      linters:
-        - gosec
+      linters: [gosec]
       text: "hardcoded"
 
-    # Allow G404 (weak random) in non-security contexts
     - path: ".*_test\\.go"
-      linters:
-        - gosec
+      linters: [gosec]
       text: "G404"
 
-  # Exclude certain messages if absolutely necessary
   exclude:
-    # Allow blank assignments that are intentional
-    - "^G104:"  # errors not checked (sometimes intentional)
+    - "^G104:"
 
-# ============================================================
-# OUTPUT: Formatting and display options
-# ============================================================
 output:
   formats:
-    - format: colored-line-number
+    - format: colored-tab
     - format: json
       path: golangci-lint-report.json
   show-statistics: true
-  unordered-results: false

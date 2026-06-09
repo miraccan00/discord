@@ -48,7 +48,7 @@ func (h *WS) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return // Accept already wrote the response.
 	}
 	defer func() {
-		_ = conn.CloseNow() //nolint:errcheck // best-effort close on handler exit
+		_ = conn.CloseNow() // best-effort; error unrecoverable at this point
 	}()
 
 	h.hub.Serve(r.Context(), conn, username)

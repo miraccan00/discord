@@ -17,7 +17,7 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.WriteHeader(status)
 	// A failed write means the client disconnected mid-response; nothing here
 	// can recover from that, so the error is intentionally dropped.
-	_, _ = w.Write(data) //nolint:errcheck // unrecoverable response write
+	_, _ = w.Write(data) // client disconnected mid-response; nothing to recover
 }
 
 // Healthz is the Kubernetes liveness probe.

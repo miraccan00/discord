@@ -9,7 +9,12 @@
       "Bash(echo \"---kubeval-ish: render ok? exit=$?\")",
       "Bash(go mod *)",
       "Bash(node -e \"console.log\\('WebSocket' in globalThis ? 'HAS_WS' : 'NO_WS'\\)\")",
-      "Bash(helm lint *)"
+      "Bash(helm lint *)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:golangci-lint.run)",
+      "Bash(gh api *)",
+      "Bash(golangci-lint --version)",
+      "Bash(golangci-lint run *)"
     ]
   }
 }
