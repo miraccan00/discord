@@ -8,7 +8,7 @@ run:
   concurrency: 4
 
 linters:
-  disable-all: true
+  default: none
   enable:
     # ── Bug detection & type safety ───────────────────────────────
     - govet
@@ -50,10 +50,8 @@ linters:
     errcheck:
       check-type-assertions: true
       check-blank: false   # _, _ = fn() explicitly signals intentional discard
-      disable-default-exclusions: false
 
     revive:
-      ignore-generated-header: true
       severity: warning
       enable-all-rules: false
       rules:
@@ -131,6 +129,39 @@ linters:
     perfsprint:
       strconcat: true
 
+  exclusions:
+    generated: lax
+    rules:
+      - path: ".*\\.pb\\.go"
+        linters: [revive, gocritic, gosec]
+
+      - path: ".*_gen\\.go"
+        linters: [revive, gocritic]
+
+      - path: ".*_mock\\.go"
+        linters: [revive, gocritic]
+
+      - path: "_test\\.go"
+        linters: [errcheck, gosec, gocritic]
+
+      - path: "_bench\\.go"
+        linters: [errcheck]
+
+      - path: "cmd/.*\\.go"
+        linters: [errcheck]
+        text: "os.Exit"
+
+      - path: "cmd/.*\\.go"
+        linters: [gosec]
+        text: "hardcoded"
+
+      - path: ".*_test\\.go"
+        linters: [gosec]
+        text: "G404"
+
+      - text: "^G104:"
+        linters: [gosec]
+
 formatters:
   enable:
     - gofmt
@@ -143,40 +174,10 @@ issues:
   max-issues-per-linter: 0
   max-same-issues: 0
 
-  exclude-rules:
-    - path: ".*\\.pb\\.go"
-      linters: [revive, gocritic, gosec]
-
-    - path: ".*_gen\\.go"
-      linters: [revive, gocritic]
-
-    - path: ".*_mock\\.go"
-      linters: [revive, gocritic]
-
-    - path: "_test\\.go"
-      linters: [errcheck, gosec, gocritic]
-
-    - path: "_bench\\.go"
-      linters: [errcheck]
-
-    - path: "cmd/.*\\.go"
-      linters: [errcheck]
-      text: "os.Exit"
-
-    - path: "cmd/.*\\.go"
-      linters: [gosec]
-      text: "hardcoded"
-
-    - path: ".*_test\\.go"
-      linters: [gosec]
-      text: "G404"
-
-  exclude:
-    - "^G104:"
-
 output:
   formats:
-    colored-tab: {}
+    text:
+      path: stdout
+      colors: true
     json:
       path: golangci-lint-report.json
-  show-statistics: true
