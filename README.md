@@ -89,7 +89,7 @@ Go to **Settings → Secrets and variables → Actions** in the GitHub repo and 
 | Secret name | Value |
 |---|---|
 | `DOCKERHUB_USERNAME` | `miraccan` |
-| `DOCKERHUB_TOKEN` | Docker Hub → Account Settings → Security → New Access Token |
+| `DOCKERHUB_PASSWORD` | Docker Hub hesap şifresi |
 
 CI runs automatically on every push to `main`. To publish images:
 
@@ -185,7 +185,7 @@ in git.
 - **CD** (tag `v*`): build & push both images to Docker Hub (semver + `sha-` tags),
   then `helm lint --strict`.
 
-Required GitHub secrets: **`DOCKERHUB_USERNAME`**, **`DOCKERHUB_TOKEN`**.
+Required GitHub secrets: **`DOCKERHUB_USERNAME`**, **`DOCKERHUB_PASSWORD`**.
 
 ---
 
